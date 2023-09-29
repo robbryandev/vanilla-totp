@@ -1,0 +1,17 @@
+{
+  "name": "vanilla-totp-generator",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "auth.js",
+  "scripts": {
+    "test": "node ./codes.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "prettier": "^3.0.3"
+  }
+}
