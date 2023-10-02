@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A Nodejs TOTP (Time-based one-time password) code generator using no 3rd party libraries",
   "type": "module",
-  "main": "auth.js",
+  "main": "totp.js",
   "repository": {
     "url": "https://github.com/robbryandev/vanilla-totp"
   },
