@@ -1,6 +1,9 @@
 "use strict";
 
-import crypto from "crypto";
+import cryptoNode from "crypto";
+import cryptoNativeModule from "./reactNative/index.js"
+
+export const cryptoNative = cryptoNativeModule;
 
 // Convert the base32 string to a binary string
 function base32Decode(encoded) {
@@ -25,7 +28,7 @@ function base32Decode(encoded) {
     return Buffer.from(bytes);
 }
 
-function getHmac(secretKey, value) {
+function getHmac(secretKey, value, crypto = cryptoNode) {
     // Create HMAC-SHA1 signature from secret key and the counter value.
     return crypto.createHmac("sha1", secretKey).update(value).digest();
 }
@@ -42,7 +45,7 @@ function dynamicTruncation(hmac) {
     return binCode;
 }
 
-export function getTotp(secretKey, timestamp = Date.now()) {
+export function getTotp(secretKey, timestamp = Date.now(), crypto = cryptoNode) {
     // Get the interval counter from the timestamp
     const interval = 30;
     const counter = Math.floor(timestamp / 1000 / interval);
