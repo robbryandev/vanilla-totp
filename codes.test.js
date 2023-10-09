@@ -1,5 +1,6 @@
 "use strict";
 
+import crypto from "crypto";
 import { getTotp } from "./totp.js";
 import "colors";
 
@@ -17,7 +18,7 @@ const tests = [
 ];
 
 tests.forEach((test) => {
-    const code = getTotp(secret, test.time);
+    const code = getTotp(secret, test.time, crypto);
     console.log(`Code: ${code}`.blue);
     console.log(`expected: ${test.expected}`.cyan);
     const pass = code === test.expected;
