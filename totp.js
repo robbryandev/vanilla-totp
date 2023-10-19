@@ -26,9 +26,11 @@ function base32Decode(encoded) {
     return Buffer.from(bytes);
 }
 
-function getHmac(secretKey, value, crypto) {
+function getHmac(secretKey, value, algorithm, crypto) {
     // Create HMAC-SHA1 signature from secret key and the counter value.
-    return crypto.createHmac("sha1", secretKey).update(value).digest();
+    // Get list of supported algorithms with openssl
+    // openssl list -digest-algorithm
+    return crypto.createHmac(algorithm, secretKey).update(value).digest();
 }
 
 function dynamicTruncation(hmac) {
@@ -43,9 +45,8 @@ function dynamicTruncation(hmac) {
     return binCode;
 }
 
-export function getTotp(secretKey, timestamp = Date.now(), crypto) {
+export function getTotp(secretKey, timestamp = Date.now(), algorithm = "sha1", digits = 6, interval = 30, crypto) {
     // Get the interval counter from the timestamp
-    const interval = 30;
     const counter = Math.floor(timestamp / 1000 / interval);
 
     // Convert the counter to an 8-byte buffer with a 4-byte offset
@@ -53,11 +54,11 @@ export function getTotp(secretKey, timestamp = Date.now(), crypto) {
     paddedCounter.writeUInt32BE(counter, 4);
 
     // Generate the HMAC from the padded counter
-    const hmac = getHmac(base32Decode(secretKey), paddedCounter, crypto);
+    const hmac = getHmac(base32Decode(secretKey), paddedCounter, algorithm, crypto);
 
     // Truncate the HMAC to a 6-digit code
-    const trunc = dynamicTruncation(hmac) % 10 ** 6;
-    const code = trunc.toString().padStart(6, "0");
+    const trunc = dynamicTruncation(hmac) % 10 ** digits;
+    const code = trunc.toString().padStart(digits, "0");
 
     return code;
 }
