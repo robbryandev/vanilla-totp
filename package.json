@@ -1,6 +1,6 @@
 {
   "name": "vanilla-totp",
-  "version": "1.2.0",
+  "version": "1.2.5",
   "description": "A Nodejs TOTP (Time-based one-time password) code generator using no 3rd party libraries",
   "type": "module",
   "main": "totp.js",
@@ -21,5 +21,8 @@
   "dependencies": {
     "colors": "^1.4.0",
     "prettier": "^3.0.3"
+  },
+  "devDependencies": {
+    "jsdoc": "^4.0.2"
   }
 }

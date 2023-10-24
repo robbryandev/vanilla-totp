@@ -3,7 +3,11 @@
 import cryptoNativeModule from "./reactNative/index.js"
 export const cryptoNative = cryptoNativeModule;
 
-// Convert the base32 string to a binary string
+/**
+ * Convert base32 encoded string to a buffer
+ * @param {String} encoded - a base32 encoded string
+ * @returns {Buffer} resulting buffer
+ */
 function base32Decode(encoded) {
     const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
     let binaryString = "";
@@ -26,13 +30,26 @@ function base32Decode(encoded) {
     return Buffer.from(bytes);
 }
 
-function getHmac(secretKey, value, algorithm, crypto) {
-    // Create HMAC-SHA1 signature from secret key and the counter value.
+/**
+ * Get an Hmac to use with cyphers
+ * @param {Buffer} secretKey - Decoded base32 secret key
+ * @param {Buffer} counter - Encoded counter for Hmac digest
+ * @param {"sha1" | "sha256" | "sha512" | "md5"} algorithm - Supported openssl compatible algorithms
+ * @param {*} crypto - Dependency injection for crypto module
+ * @returns {Hmac}
+ */
+function getHmac(secretKey, counter, algorithm, crypto) {
+    // Create HMAC signature from secret key and the counter value.
     // Get list of supported algorithms with openssl
     // openssl list -digest-algorithm
-    return crypto.createHmac(algorithm, secretKey).update(value).digest();
+    return crypto.createHmac(algorithm, secretKey).update(counter).digest();
 }
 
+/**
+ * Get dynamic truncation offset from hmac
+ * @param {Hmac} hmac - Hmac value
+ * @returns {Number}
+ */
 function dynamicTruncation(hmac) {
     // Code adapted from the HOTP specification https://www.ietf.org/rfc/rfc4226.txt
     // Section 5.4
@@ -45,6 +62,15 @@ function dynamicTruncation(hmac) {
     return binCode;
 }
 
+/**
+ * Get an Hmac to use with cyphers
+ * @param {String} secretKey - base32 encoded key
+ * @param {Number} timestamp - Number of milliseconds since UNIX Epoch.
+ * @param {"sha1" | "sha256" | "sha512" | "md5"} algorithm - Supported openssl compatible algorithms
+ * @param {6 | 8} digits - Length of generated TOTP code
+ * @param {15 | 30 | 60} interval - Time interval in seconds to base code generation
+ * @param {*} crypto - Dependency injection for crypto module
+ */
 export function getTotp(secretKey, timestamp = Date.now(), algorithm = "sha1", digits = 6, interval = 30, crypto) {
     // Get the interval counter from the timestamp
     const counter = Math.floor(timestamp / 1000 / interval);
